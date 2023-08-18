@@ -1,0 +1,66 @@
+# docker compose file to be used for deploying to IED
+# No mqtt server (ie-databus will be used - bridged for messages from gateway)
+version: "3"
+
+services:
+  chirpstack:
+    image: chirpstack/chirpstack:4
+    command: -c /etc/chirpstack
+    restart: unless-stopped
+    mem_limit: 500mb
+    volumes:
+      - ./configuration/chirpstack:/etc/chirpstack
+      - ./lorawan-devices:/opt/lorawan-devices
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - MQTT_BROKER_HOST=ie-databus
+      - MQTT_BROKER_PORT=1883
+      - MQTT_USER=chirpstack
+      - MQTT_PASSWORD=chirpstack
+      - REDIS_HOST=redis
+      - POSTGRESQL_HOST=postgres
+    networks:
+      - chirpstack-net
+      - proxy-redirect
+    ports:
+      - 8080:8080 #port exoposed for the WebUI and the API interface
+
+  postgres:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    mem_limit: 500mb
+    volumes:
+      - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
+      - postgresqldata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=root
+    networks:
+      - chirpstack-net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    mem_limit: 500mb
+    volumes:
+      - redisdata:/data
+    networks:
+      - chirpstack-net
+
+#removed mosquitto service already available in the ied
+
+volumes:
+  postgresqldata:
+  redisdata:
+
+networks:
+  # network specifically used for the chirpstack and connector this will create the network the connector needs to connect to
+  chirpstack-net:
+    name: chirpstack-net
+    driver: bridge
+  # network for communicating with the ie-databus broker
+  proxy-redirect:
+    external: true
+    name: proxy-redirect
+    driver: host
