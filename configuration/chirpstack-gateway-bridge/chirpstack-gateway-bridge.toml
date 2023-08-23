@@ -64,8 +64,8 @@ marshaler="protobuf"
 
 
     # broker on Edge Device:
-    server = "192.168.0.115:9883"
-    #server = "ssl://192.168.0.115:9883"
+    #server = "192.168.0.115:9883"
+    server = "ssl://192.168.0.115:9883"
 
     # Connect with the given username (optional)
     username="chirpstack"
@@ -81,9 +81,9 @@ marshaler="protobuf"
     # Use this when setting up a secure connection (when server uses ssl://...)
     # but the certificate used by the server is not trusted by any CA certificate
     # on the server (e.g. when self generated).
-    #ca_cert="/etc/chirpstack-gateway-bridge/thetaphi-ca.crt"
+    ca_cert="/etc/chirpstack-gateway-bridge/thetaphi-ca.crt"
 
     # mqtt TLS certificate file (optional)
-    #tls_cert="/etc/chirpstack-gateway-bridge/ievd-v1-12.crt"
+    tls_cert="/etc/chirpstack-gateway-bridge/ievd-v1-12.crt"
     # mqtt TLS key file (optional)
-    #tls_key="/etc/chirpstack-gateway-bridge/ievd-v1-12.key"
+    tls_key="/etc/chirpstack-gateway-bridge/ievd-v1-12.key"
