@@ -29,7 +29,7 @@ type="semtech_udp"
 # Payload marshaler.
 #
 # This defines how the MQTT payloads are encoded. Valid options are:
-# * protobuf:  Protobuf encoding
+# * protobuf:  Protobuf encoding (required for chirpstack v4)
 # * json:      JSON encoding (easier for debugging, but less compact than 'protobuf')
 marshaler="protobuf"
 
@@ -37,15 +37,17 @@ marshaler="protobuf"
   [integration.mqtt]
   # Event topic template.
   event_topic_template="gateway/{{ .GatewayID }}/event/{{ .EventType }}"
-  # update template as per Chirpstack v4
+
+  # update template as per Chirpstack v4 or change the server config to match
   #event_topic_tempelate="eu868/gateway/{{ .GatewayID }}/event/{{ .EventType }}"
 
   #Command topic template.
   command_topic_template="gateway/{{ .GatewayID }}/command/#"
-  #update template as per chirpstack v4 from docker compose file configuration
+
+  #update template as per chirpstack v4 from docker compose file configuration or change the server config to match
   #command_topic_tempelate = "eu868/gateway/{{ .GatewayID }}/command/#"
 
-  #This needs to be non zero for connecting to the exyernal databus
+  #This needs to be non zero for connecting to the external databus
   keep_alive="30s"
 
   #MQTT authentication.
@@ -58,32 +60,28 @@ marshaler="protobuf"
     # Generic MQTT authentication.
     [integration.mqtt.auth.generic]
     # MQTT server (e.g. scheme://host:port where scheme is tcp, ssl or ws)
-    #server = "tcp://192.168.0.68:1883"
-    #server="tcp://13.42.57.37:1883"
-    #server = "tcp://localhost:1883"
-
-
-    # broker on Edge Device:
-    #server = "192.168.0.115:9883"
-    server = "ssl://192.168.0.115:9883"
+    # insecure server on edge device
+    #server = "<IP Address of edge device>:9883"
+    # secure server on edge device
+    server = "ssl://<IP Address of edge device>:9883"
 
     # Connect with the given username (optional)
-    username="chirpstack"
+    username="<username configured in external databus>"
 
     # Connect with the given password (optional)
-    password="chirpstack"
-    #password="SecureThetaPhiPassword"
+    password="<password configured in external databus>"
 
-    #client_id="rak-gateway"
+    #client_id=""
 
     # CA certificate file (optional)
     #
     # Use this when setting up a secure connection (when server uses ssl://...)
     # but the certificate used by the server is not trusted by any CA certificate
     # on the server (e.g. when self generated).
-    ca_cert="/etc/chirpstack-gateway-bridge/thetaphi-ca.crt"
+    ca_cert="<absolute path .e.g: /etc/chirpstack-gateway-bridge/thetaphi-ca.crt>"
 
     # mqtt TLS certificate file (optional)
-    tls_cert="/etc/chirpstack-gateway-bridge/ievd-v1-12.crt"
+    tls_cert="<absolute path .e.g: /etc/chirpstack-gateway-bridge/ievd-v1-12.crt>"
+    
     # mqtt TLS key file (optional)
-    tls_key="/etc/chirpstack-gateway-bridge/ievd-v1-12.key"
+    tls_key="<absolute path .e.g: /etc/chirpstack-gateway-bridge/ievd-v1-12.key>"
